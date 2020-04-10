@@ -1,0 +1,50 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "CertificAtor"
+bundle = "vmkb.com.github"
+version = "0.0.1"
+url = "https://github.com/vkmb/certificator"
+license = "MIT license"
+author = 'Mithun'
+author_email = "mithun14leo@gmail.com"
+
+[tool.briefcase.app.certificator]
+formal_name = "CertificAtor"
+description = "Application for writing e-cetrificates"
+icon = "src/certificator/resources/certificator"
+sources = ['src/certificator']
+requires = []
+
+
+[tool.briefcase.app.certificator.macOS]
+requires = [
+    'toga-cocoa>=0.3.0.dev20',
+    'Pillow==7.1.1',
+]
+
+[tool.briefcase.app.certificator.linux]
+requires = [
+    'toga-gtk>=0.3.0.dev20',
+    'Pillow==7.1.1',
+]
+
+[tool.briefcase.app.certificator.windows]
+requires = [
+    'toga-winforms>=0.3.0.dev20',
+    'Pillow==7.1.1',
+]
+
+# Mobile deployments
+[tool.briefcase.app.certificator.iOS]
+requires = [
+    'toga-iOS>=0.3.0.dev20',
+    'Pillow==7.1.1',
+]
+
+[tool.briefcase.app.certificator.android]
+requires = [
+    'toga-android>=0.3.0.dev20',
+    'Pillow==7.1.1',
+]
