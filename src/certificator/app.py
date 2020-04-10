@@ -30,7 +30,7 @@ class CertificAtor(toga.App):
         self.loaded_csv_data = toga.sources.ListSource([], [])
         
         self.coord = {}
-        self.bnd_box = 0 # {id:{'coord':[], 'data':''}}
+        self.bnd_box = 0
         self.text_list = []
         self.box_list = []
         self.x_in = []
