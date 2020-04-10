@@ -61,17 +61,15 @@ class CertificAtor(toga.App):
         self.name_container.add(self.global_ctrl_box)
         self.name_container.add(self.name_scroller)
         self.image_view = toga.ImageView(style=Pack(flex=1, padding=5))
-        self.left_panel.add(self.image_view, self.loading, self.name_container, self.certificate_box, self.font_label_loc)
-        self.main_panel = toga.SplitContainer(style=Pack(flex=1))
-        self.right_panel = toga.Box(style=Pack(flex=1, direction=COLUMN))
-        self.open_csv = toga.Button("Open CSV File", id="open_csv", on_press=self.fetch)
-        self.csv_widget = toga.Table(id="sheet", headings=[], style=Pack(flex=1, padding=5), on_select=self.teleport)
-        self.right_panel.add(self.csv_widget)
-        self.right_panel.add(self.open_csv)
-        self.main_panel.content = [self.left_panel, self.right_panel]
+        self.open_csv = toga.Button("Select a CSV File", id="open_csv", style=Pack(padding=(0, 5)), on_press=self.fetch)
+        self.left_panel.add(self.image_view, self.loading, self.name_container, self.certificate_box, self.font_label_loc, self.open_csv)
         self.main_window = toga.MainWindow(title=self.formal_name)
-        self.main_window.content = self.main_panel
+        self.csv_window = toga.Window(title=self.formal_name)
+        self.main_window.content = self.left_panel
+        self.csv_window.content = toga.Box(style=Pack(direction=COLUMN, padding=5))
+        self.csv_window.show()
         self.main_window.show()
+        
     
     def fetch(self, widget):
         if widget.id == "open" or (widget.id == "add" and self.file_name == ""):
@@ -94,8 +92,8 @@ class CertificAtor(toga.App):
                 box = toga.Box(id=f'bnd_box_{self.bnd_box}')
                 label = toga.Label('Text:', style=Pack(padding=5))
                 self.text_list.append(toga.TextInput(id=f'lin_{self.bnd_box}', style=(Pack(padding=5))))
-                x = toga.Label('x :', id=f'x_{self.bnd_box}', style=Pack(padding=5, color="red"))
-                y = toga.Label('y :', id=f'y_{self.bnd_box}', style=Pack(padding=5, color="red"))
+                x = toga.Label('x :', id=f'x_{self.bnd_box}', style=Pack(padding=5, color="red", width=60))
+                y = toga.Label('y :', id=f'y_{self.bnd_box}', style=Pack(padding=5, color="red", width=60))
                 
                 x_in = toga.Slider(id=f'xin_{self.bnd_box}', style=Pack(padding=5), default=10, range=(0, self.width), on_slide=self.teleport)
                 y_in = toga.Slider(id=f'yin_{self.bnd_box}', style=Pack(padding=5), default=10, range=(0, self.height), on_slide=self.teleport)
@@ -111,6 +109,7 @@ class CertificAtor(toga.App):
         if widget.id == "open_csv":
             self.csv_file_name = toga.sources.ValueSource(value=self.main_window.open_file_dialog(title="Select the csv file", file_types=["csv"]))
             self.get_right_panel()
+            # self.right_panel.refresh()
             # self.main_panel.content = [self.left_panel, self.get_right_panel()]
             # self.main_panel.refresh()
             # self.main_window.content = self.main_panel
@@ -146,20 +145,17 @@ class CertificAtor(toga.App):
             elif widget.id.startswith('yin') and self.coord[key][1] != value:
                 if y_label != None:
                     y_label.text = f'y : {value}'
-                    print(y_label.text)                
                 self.coord[key][1] = value
                 change = True
             
             elif widget.id.startswith('fin'):
                 self.f.text = f'Font Size  : {value} pts'
-                
                 for key in self.coord:
                     if self.coord[key][2] != value:
                         self.coord[key][2] = value
                         change = True
             
             elif widget.id == "sheet":
-                # print(row.__dict__)
                 for l_index, place_holder in enumerate(self.text_list):
                     for d_index, dict_key in enumerate(value['_attrs']):
                         if l_index == d_index-1:
@@ -167,10 +163,6 @@ class CertificAtor(toga.App):
                             change = True
                             key = l_index
             
-            
-            print(x_label.text, y_label.text)
-            x_label.refresh()
-            y_label.refresh()
             self.name_box.refresh()
             self.global_ctrl_box.refresh()
             self.update_canvas(change, key)
@@ -178,7 +170,6 @@ class CertificAtor(toga.App):
 
     def update_canvas(self, change, key):
         if change and len(self.text_list[key].value) > 0:
-            
             with open(self.font_file_name, 'rb') as FP:
                 font_face =  ImageFont.truetype(FP, self.coord[0][-1])
                 img = Image.open(self.file_name)
@@ -197,19 +188,11 @@ class CertificAtor(toga.App):
                 temp = [row for row in reader]
                 headings = ['_'+label.replace(' ', '_') if ' ' in label else '_'+label for label in temp[0]]
                 data = temp[1:]
-                # csv_widget = toga.Table(id="sheet", headings=headings, data=data, style=Pack(flex=1, padding=5), on_select=self.teleport)
-                for heading in headings:
-                    self.csv_widget.add_column(heading)
-                self.csv_widget.data = data
-                self.right_panel.refresh()
-                
-        # else:
-        #     csv_widget = toga.Table(id="sheet", headings=['S.No','Name', 'Profession'], style=Pack(flex=1, padding=5), on_select=self.teleport)
-        # open_csv = toga.Button("Open CSV File", id="open_csv", on_press=self.fetch)
-        # right_panel.add(csv_widget)
-        # right_panel.add(open_csv)
-        # return right_panel
-
+                csv_widget = toga.Table(id="sheet", headings=headings, data=data, style=Pack(flex=1, padding=5), on_select=self.teleport)
+        else:
+            csv_widget = toga.Table(id="sheet", headings=[], style=Pack(flex=1, padding=5))
+        right_panel.add(csv_widget)
+        self.csv_window.content = right_panel
         
 
 def plot(canv, color, col, row):
