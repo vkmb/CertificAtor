@@ -20,31 +20,31 @@ requires = []
 
 [tool.briefcase.app.certificator.macOS]
 requires = [
-    'toga-cocoa>=0.3.0.dev20',
+    'toga-cocoa>=0.3.0.dev19',
     'Pillow==7.1.1',
 ]
 
 [tool.briefcase.app.certificator.linux]
 requires = [
-    'toga-gtk>=0.3.0.dev20',
+    'toga-gtk>=0.3.0.dev19',
     'Pillow==7.1.1',
 ]
 
 [tool.briefcase.app.certificator.windows]
 requires = [
-    'toga-winforms>=0.3.0.dev20',
+    'toga-winforms>=0.3.0.dev19',
     'Pillow==7.1.1',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.certificator.iOS]
 requires = [
-    'toga-iOS>=0.3.0.dev20',
+    'toga-iOS>=0.3.0.dev19',
     'Pillow==7.1.1',
 ]
 
 [tool.briefcase.app.certificator.android]
 requires = [
-    'toga-android>=0.3.0.dev20',
+    'toga-android>=0.3.0.dev19',
     'Pillow==7.1.1',
 ]
