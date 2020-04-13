@@ -79,15 +79,14 @@ class CertificAtor(toga.App):
         self.coord = {}
         self.bnd_box = 0
         self.text_list = []
-        self.box_list = []
-        self.x_in = []
-        self.y_in = []
         self.left_panel = toga.Box(style=Pack(direction=COLUMN))
 
         self.file_name_label = toga.Label(
-            "Certificate Image Name", style=Pack(padding=5)
+            "Image File : None", style=Pack(padding=5, flex=1)
         )
-        self.font_label_loc = toga.Label("Font File : None", style=Pack(padding=5))
+        self.font_label_loc = toga.Label(
+            "Font File : None", style=Pack(padding=10, flex=1)
+        )
         self.fetch_button = toga.Button(
             "Open", id="open", style=Pack(padding=5), on_press=self.fetch
         )
@@ -97,15 +96,12 @@ class CertificAtor(toga.App):
         )
 
         self.name_container = toga.Box(style=Pack(direction=ROW, padding=5))
-        self.global_ctrl_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
         self.add_name_button = toga.Button(
             "Add Label  ", id="add", style=Pack(padding=5, flex=1), on_press=self.fetch
         )
         self.add_font_file = toga.Button(
             "Change Font", id="font", style=Pack(padding=5, flex=1), on_press=self.fetch
         )
-        self.global_ctrl_box.add(self.add_name_button, self.add_font_file)
-        self.name_container.add(self.global_ctrl_box)
 
         self.name_box = toga.Box(style=Pack(direction=ROW, padding=5))
         self.name_scroller = toga.ScrollContainer(
@@ -140,7 +136,13 @@ class CertificAtor(toga.App):
         )
         self.bottom_button_box = toga.Box(
             style=Pack(padding=5, direction=ROW),
-            children=[self.open_csv, self.write_certificate, self.send_emails],
+            children=[
+                self.add_name_button,
+                self.add_font_file,
+                self.open_csv,
+                self.write_certificate,
+                self.send_emails,
+            ],
         )
         self.loading = toga.ProgressBar(style=Pack(padding=5))
         self.left_panel.add(
@@ -166,7 +168,7 @@ class CertificAtor(toga.App):
             self.image_file_name = (
                 str(temp) if temp is not None else self.image_file_name
             )
-            self.file_name_label.text = "Image File Location : " + self.image_file_name
+            self.file_name_label.text = "Image File : " + self.image_file_name
             if self.image_file_name != "":
                 self.tmp_filen = f"{self.image_file_name}_temp.jpg"
                 self.image_view.image = toga.Image(self.image_file_name)
@@ -559,7 +561,6 @@ class CertificAtor(toga.App):
                         change = True
                         key = l_index
             self.name_box.refresh()
-            self.global_ctrl_box.refresh()
             self.update_canvas(change, key, size)
 
     def update_canvas(self, change, key, size=None):
@@ -1003,7 +1004,6 @@ class CertificAtor(toga.App):
                     self.email_pb.start()
                     logs = []
                     for row in self.email_data:
-                        print(row[email_index])
                         feedback = mailer.send_mail(
                             (row[email_index]).strip(),
                             self.sub_usin.value,
