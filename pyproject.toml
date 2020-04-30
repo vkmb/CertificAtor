@@ -22,18 +22,21 @@ requires = []
 requires = [
     'toga-cocoa>=0.3.0.dev19',
     'Pillow==7.1.1',
+    'numpy==1.18.2'
 ]
 
 [tool.briefcase.app.certificator.linux]
 requires = [
     'toga-gtk>=0.3.0.dev19',
     'Pillow==7.1.1',
+    'numpy==1.18.2'
 ]
 
 [tool.briefcase.app.certificator.windows]
 requires = [
     'toga-winforms>=0.3.0.dev19',
     'Pillow==7.1.1',
+    'numpy==1.18.2'
 ]
 
 # Mobile deployments
@@ -41,10 +44,12 @@ requires = [
 requires = [
     'toga-iOS>=0.3.0.dev19',
     'Pillow==7.1.1',
+    'numpy==1.18.2'
 ]
 
 [tool.briefcase.app.certificator.android]
 requires = [
     'toga-android>=0.3.0.dev19',
     'Pillow==7.1.1',
+    'numpy==1.18.2'
 ]

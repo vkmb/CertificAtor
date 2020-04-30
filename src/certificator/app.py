@@ -6,6 +6,7 @@ import csv
 import time
 import toga
 import smtplib
+import numpy as np
 from toga.style import Pack
 from threading import Thread
 from email.mime.text import MIMEText
@@ -80,6 +81,10 @@ class CertificAtor(toga.App):
         self.bnd_box = 0
         self.text_list = []
         self.left_panel = toga.Box(style=Pack(direction=COLUMN))
+        self.font_color = {'red':0, 'grn':0, 'blu':0} # r, g, b
+        
+        with open('/tmp/temp.png', 'w') as p:
+            pass
 
         self.file_name_label = toga.Label(
             "Image File : None", style=Pack(padding=5, flex=1)
@@ -144,6 +149,28 @@ class CertificAtor(toga.App):
                 self.send_emails,
             ],
         )
+        self.pil_image = [[[self.font_color['red'], self.font_color['grn'], self.font_color['blu']] for i in range(0, 100)]for i in range(0, 100)]
+        self.red_label = toga.Label('R : 0', id='red_label', style=Pack(width=50, padding=5))
+        self.grn_label = toga.Label('G : 0', id='grn_label', style=Pack(width=50, padding=5))
+        self.blu_label = toga.Label('B : 0', id='blu_label', style=Pack(width=50, padding=5))
+        self.red_slide = toga.Slider(id='red_slider', default=0, range=(0, 255), on_slide=self.change_color, style=Pack(padding=5))
+        self.grn_slide = toga.Slider(id='grn_slider', default=0, range=(0, 255), on_slide=self.change_color, style=Pack(padding=5))
+        self.blu_slide = toga.Slider(id='blu_slider', default=0, range=(0, 255), on_slide=self.change_color, style=Pack(padding=5))
+        self.font_color_label = toga.Label('Font Colour', style=Pack(width=70, padding=(5, 1))) 
+        self.font_color_img = toga.ImageView(id='font_color', style=Pack(width=30, height=20, padding=5))
+        self.font_color_container = toga.Box(
+            style=Pack(padding=5, direction=ROW),
+            children=[
+                self.font_color_label,
+                self.red_label, 
+                self.red_slide, 
+                self.grn_label, 
+                self.grn_slide, 
+                self.blu_label, 
+                self.blu_slide,
+                self.font_color_img 
+            ]
+        )
         self.loading = toga.ProgressBar(style=Pack(padding=5))
         self.left_panel.add(
             self.image_tool,
@@ -151,6 +178,7 @@ class CertificAtor(toga.App):
             self.name_container,
             self.certificate_box,
             self.font_label_loc,
+            self.font_color_container,
             self.bottom_button_box,
         )
         self.main_window = toga.MainWindow(title=self.formal_name)
@@ -159,6 +187,24 @@ class CertificAtor(toga.App):
         self.csv_window.content = toga.Box(style=Pack(direction=COLUMN, padding=5))
         self.csv_window.show()
         self.main_window.show()
+    
+
+    def change_color(self, widget):
+        key = widget.id.split('_')[0]
+        self.font_color[key] = int(widget.value)
+        if key.startswith('r'):
+            self.red_label.text = f'R : {self.font_color[key]}'
+        if key.startswith('g'):
+            self.grn_label.text = f'G : {self.font_color[key]}'
+        if key.startswith('b'):
+            self.blu_label.text = f'B : {self.font_color[key]}'
+
+        self.pil_image = np.array([[[self.font_color['red'], self.font_color['grn'], self.font_color['blu']] for i in range(0, 20)]for i in range(0, 15)], dtype=np.uint8)
+        temp = Image.fromarray(self.pil_image)
+        temp.save('/tmp/temp.png')
+        self.font_color_img.image =  toga.Image('/tmp/temp.png')
+
+
 
     def fetch(self, widget):
         if widget.id == "open" or (widget.id == "add" and self.image_file_name == ""):
@@ -575,6 +621,7 @@ class CertificAtor(toga.App):
                     new_image.text(
                         [self.coord[_key][size]["x"], self.coord[_key][size]["y"]],
                         self.text_list[_key].value,
+                        fill=(self.font_color['red'], self.font_color['grn'], self.font_color['blu']),
                         font=font_face,
                     )
                 else:
@@ -584,6 +631,7 @@ class CertificAtor(toga.App):
                     new_image.text(
                         [self.coord[_key]["mt"]["x"], self.coord[_key]["mt"]["y"]],
                         self.text_list[_key].value,
+                        fill=(self.font_color['red'], self.font_color['grn'], self.font_color['blu']),
                         font=font_face,
                     )
                 del font_face
@@ -691,11 +739,14 @@ class CertificAtor(toga.App):
         to_write = {}
         self.csv_log_file_name = ""
         logs = []
-        flag = False
         self.loading.max = len(self.data)
+        print(self.loading.max)
         self.loading.start()
-
+        print(self.loading.is_running)
         for sno, row in enumerate(self.data, 1):
+            self.loading.value = sno
+            print(self.loading.value)
+            self.loading.refresh()
             to_write = {
                 _label: row[self.consolidated[_label]["th"]]
                 for _label in self.consolidated
@@ -718,6 +769,7 @@ class CertificAtor(toga.App):
                             self.consolidated[label]["st"]["y"],
                         ],
                         to_write[label],
+                        fill=(self.font_color['red'], self.font_color['grn'], self.font_color['blu']),
                         font=font_face,
                     )
                 if (
@@ -735,6 +787,7 @@ class CertificAtor(toga.App):
                             self.consolidated[label]["mt"]["y"],
                         ],
                         to_write[label],
+                        fill=(self.font_color['red'], self.font_color['grn'], self.font_color['blu']),
                         font=font_face,
                     )
                 if (
@@ -752,6 +805,7 @@ class CertificAtor(toga.App):
                             self.consolidated[label]["lt"]["y"],
                         ],
                         to_write[label],
+                        fill=(self.font_color['red'], self.font_color['grn'], self.font_color['blu']),
                         font=font_face,
                     )
                 del font_face
@@ -760,7 +814,6 @@ class CertificAtor(toga.App):
             image.save(written_certificate_name)
             temp = row + [os.path.abspath(written_certificate_name)]
             logs.append(temp)
-            self.loading.value = sno
 
         # log to file
         if self.csv_file_name != "":
@@ -778,6 +831,7 @@ class CertificAtor(toga.App):
 
         self.loading.stop()
         self.loading.value = 0
+        self.loading.refresh()
 
     def get_mail_window(self, widget):
         if widget != None:
