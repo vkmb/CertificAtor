@@ -20,7 +20,7 @@ mac-alias==2.0.7
 MarkupSafe==1.1.1
 numpy==1.18.2
 opencv-contrib-python==4.2.0.32
-Pillow==8.3.2
+Pillow==9.0.1
 poyo==0.5.0
 python-dateutil==2.8.1
 requests==2.23.0
